@@ -2,20 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+h1,h2,h3{
+    @apply font-poppins;
+    font-weight: 400
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply font-saira bg-light-100 dark:bg-dark-200 dark:text-white;
+  font-weight: 300;
 }
+
+/* test:{
+  color:#2e2f3f;
+} */
+
+@layer base {
+  :root {
+        --radius: 0.5rem
+    }
+}
+
