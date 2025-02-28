@@ -28,6 +28,12 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 // clerk auth
 import { ClerkProvider } from "@clerk/nextjs";
 
+// modal provider
+import { ModalProvider } from "@/components/providers/modal-providers";
+
+// toaster
+import { Toaster } from "@/components/ui/sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,6 +52,8 @@ export default function RootLayout({
             enableSystem={false}
             storageKey="discord-clone-theme"
           >
+            <ModalProvider />
+            <Toaster />
             {children}
           </ThemeProvider>
         </body>

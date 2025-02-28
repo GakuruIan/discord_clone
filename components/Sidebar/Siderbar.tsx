@@ -1,3 +1,5 @@
+"use client";
+
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import React from "react";
@@ -7,16 +9,25 @@ import { ScrollArea } from "../ui/scroll-area";
 // dummy
 import background from "@/public/background.jpg";
 
+// components
 import Actiontooltip from "../Actiontooltip/Actiontooltip";
 import { ModeToggle } from "../mode-toggle";
 
+import { useModal } from "@/hooks/use-modal-store";
+
+import { UserButton } from "@clerk/nextjs";
+
 const Siderbar = () => {
+  const { onOpen } = useModal();
   return (
     <div className="flex flex-col items-center h-full  gap-y-2 px-1  py-4">
       <div className="border-b border-b-gray-300 dark:border-b-gray-600 pb-2">
         {/* create server */}
         <Actiontooltip label="create server" align="center" side="right">
-          <button className="bg-slate-200 dark:bg-dark-50 p-3 rounded-md hover:bg-indigo-400 hover:text-white flex items-center justify-center">
+          <button
+            onClick={() => onOpen("CreateServer")}
+            className="bg-slate-200 dark:bg-dark-50 p-3 rounded-md hover:bg-indigo-400 hover:text-white flex items-center justify-center"
+          >
             <Plus size={18} />
           </button>
         </Actiontooltip>
@@ -39,7 +50,9 @@ const Siderbar = () => {
         </div>
 
         <div className="">
-          <div className="bg-gray-500 p-3.5 rounded-full"></div>
+          <div className=" p-3.5 rounded-full">
+            <UserButton />
+          </div>
         </div>
       </div>
       {/* user */}

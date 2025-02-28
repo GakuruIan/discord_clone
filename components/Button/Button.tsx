@@ -1,15 +1,19 @@
 import React from "react";
 
 type ButtonProps = {
+  type: "button" | "submit" | "reset";
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   style?: string;
+  disabled?: boolean;
 };
 
-const Button = ({ label, onClick, style }: ButtonProps) => {
+const Button = ({ label, onClick, style, type, disabled }: ButtonProps) => {
   return (
     <button
-      className={`py-3 px-4 text-center rounded-sm w-full ${style}`}
+      disabled={disabled}
+      type={type}
+      className={`py-3 px-4  rounded-sm w-full ${style} flex items-center justify-center gap-x-4`}
       onClick={onClick}
     >
       {label}
