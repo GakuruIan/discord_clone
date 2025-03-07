@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 // clerk
 import { useSignUp } from "@clerk/nextjs";
 
@@ -42,6 +44,8 @@ const formSchema = z.object({
 const OPTVerification = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
 
   const form = useForm({
@@ -52,6 +56,7 @@ const OPTVerification = () => {
   });
 
   const handleVerification = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     const { code } = values;
 
     if (!isLoaded) return;
@@ -69,9 +74,12 @@ const OPTVerification = () => {
           description: "Your account has being verified ",
         });
 
+        setIsLoading(false);
+
         // router
         router.push("/");
       } else {
+        setIsLoading(false);
         toast("An error occurred", {
           description: JSON.stringify(signUpAttempt, null, 2),
         });
@@ -84,8 +92,6 @@ const OPTVerification = () => {
       console.error("Error:", JSON.stringify(error, null, 2));
     }
   };
-
-  const isLoading = form.formState.isLoading;
 
   return (
     <>
@@ -146,7 +152,7 @@ const OPTVerification = () => {
                         </FormDescription>
 
                         <Button
-                          disabled={isLoading}
+                          loading={isLoading}
                           type="submit"
                           label="Verify"
                           style="dark:bg-white bg-dark-200 text-white dark:text-black font-semibold mt-4 hover:bg-primary-100"

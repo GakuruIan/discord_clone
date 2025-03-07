@@ -86,7 +86,11 @@ export const CreateServer = () => {
                        Server Image
                     </FormLabel> */}
                     <FormControl>
-                      <FileUpload />
+                      <FileUpload
+                        endpoint="imageUploader"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     </FormControl>
                   </FormItem>
                 )}

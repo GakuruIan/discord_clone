@@ -40,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider afterSignOutUrl={"/login"}>
       <html lang="en">
         <body
           className={`${poppins.variable} ${saira.variable} ${bebas.variable}`}
@@ -53,7 +53,7 @@ export default function RootLayout({
             storageKey="discord-clone-theme"
           >
             <ModalProvider />
-            <Toaster />
+            <Toaster richColors={true} />
             {children}
           </ThemeProvider>
         </body>

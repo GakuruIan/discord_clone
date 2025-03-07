@@ -1,7 +1,7 @@
 "use client";
 
 // clerk
-import { useSignUp } from "@clerk/nextjs";
+import { useSignUp, useAuth } from "@clerk/nextjs";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -26,6 +26,9 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import OPTVerification from "@/components/OTPVerification/OPTVerification";
+
+// router
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   username: z
@@ -57,36 +60,42 @@ const Page = () => {
   const { isLoaded, signUp } = useSignUp();
   const [verifying, setVerifying] = useState(false);
 
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const router = useRouter();
+
+  const { userId } = useAuth();
+
+  if (userId) router.push("/");
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     const { username, email, password } = values;
     if (!isLoaded) return;
 
-    try {
-      // start the log sign process
-      await signUp.create({
-        username,
-        emailAddress: email,
-        password,
-      });
+    return toast.promise(
+      (async () => {
+        await signUp.create({
+          username,
+          emailAddress: email,
+          password,
+        });
 
-      // send user verification code
-      await signUp.prepareEmailAddressVerification({
-        strategy: "email_code",
-      });
+        // send user verification code
+        await signUp.prepareEmailAddressVerification({
+          strategy: "email_code",
+        });
 
-      // setting the verification to true to show the verification page
-      setVerifying(true);
-
-      toast.success("Account created successfully", {
-        description: "A verification code has being sent to your Email",
-      });
-    } catch (error) {
-      toast("An error has occurred", {
-        description: "Please try again Later",
-      });
-
-      console.log(error);
-    }
+        setVerifying(true);
+        setIsLoading(false);
+      })(),
+      {
+        loading: "Creating account...",
+        success: "Account created successfully",
+        error: "An error has occurred",
+        position: "top-left",
+      }
+    );
   };
 
   const form = useForm({
@@ -98,9 +107,6 @@ const Page = () => {
     },
   });
 
-  const isLoading = form.formState.isLoading;
-
-  console.log(verifying);
   if (verifying) {
     return <OPTVerification />;
   }
@@ -208,7 +214,7 @@ const Page = () => {
                         </div>
 
                         <Button
-                          disabled={isLoading}
+                          loading={isLoading}
                           type="submit"
                           label="Sign up"
                           style="dark:bg-white bg-dark-200 text-white dark:text-black font-semibold mt-4 hover:bg-primary-100"

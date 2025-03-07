@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 
 // clerk
-import { useSignIn } from "@clerk/nextjs";
+import { useSignIn, useAuth } from "@clerk/nextjs";
 
 // components
 import Button from "@/components/Button/Button";
@@ -51,6 +51,12 @@ const Page = () => {
   const router = useRouter();
   const { isLoaded, signIn, setActive } = useSignIn();
 
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const { userId } = useAuth();
+
+  if (userId) router.push("/");
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,10 +65,10 @@ const Page = () => {
     },
   });
 
-  const isLoading = form.formState.isLoading;
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { email, password } = values;
+
+    setIsLoading(true);
 
     if (!isLoaded) return;
 
@@ -75,15 +81,17 @@ const Page = () => {
 
         if (signInAttempt.status === "complete") {
           await setActive({ session: signInAttempt.createdSessionId });
+          setIsLoading(false);
           router.push("/");
         } else {
+          setIsLoading(false);
           console.error("Sign-in requires further steps:", signInAttempt);
           throw new Error("Sign-in requires further verification.");
         }
       })(),
       {
         loading: "Signing in...",
-        success: "Login successful! Redirecting...",
+        success: "Login successful!",
         error: "Failed to sign in. Please check your credentials.",
         position: "top-center",
       }
@@ -177,6 +185,7 @@ const Page = () => {
                         </div>
 
                         <Button
+                          loading={isLoading}
                           type="submit"
                           label="Sign in"
                           style="dark:bg-white bg-dark-200 text-white dark:text-black font-semibold mt-8 hover:bg-primary-100"

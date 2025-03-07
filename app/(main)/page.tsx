@@ -2,82 +2,82 @@
 import React from "react";
 import Image from "next/image";
 
-// icons
-import { User } from "lucide-react";
+// clerk
+import { useAuth } from "@clerk/nextjs";
+
+// router
+import { useRouter } from "next/navigation";
 
 // components
 import Topbar from "@/components/TopBar/Topbar";
+import Banner from "@/components/Banner/Banner";
 
 // image
-import nebula from "@/public/nebula.jpg";
+import cod from "@/public/COD.jpeg";
 import pic from "@/public/background.jpg";
 
-const page = () => {
-  const servers = [1];
+const Page = () => {
+  const router = useRouter();
+
+  const { userId } = useAuth();
+
+  if (!userId) {
+    router.push("/login");
+
+    console.log("no user");
+  }
+
+  const servers = [1, 2, 3, 4];
   return (
     <div className="relative min-h-screen w-full dark:bg-dark-250  bg-light-200">
       {/* top bar */}
       <Topbar />
 
+      <Banner />
+
       <div className="px-2">
+        <p className="text-sm font-poppins tracking-wide mb-3 font-medium">
+          Live
+        </p>
         <div className="grid md:grid-cols-4 grid-cols-1 gap-4 pb-4">
           {/* server */}
           {servers.map((_, index) => {
             return (
               <div
                 key={index}
-                className="relative dark:bg-dark-50 dark:hover:bg-dark-20 transition-colors duration-75 pb-4 rounded-lg overflow-hidden"
+                className="relative  transition-colors duration-75 overflow-hidden"
               >
-                <div className="relative mb-8">
+                <div className="relative mb-1.5">
                   {/* server banner */}
                   <Image
-                    src={nebula}
+                    src={cod}
                     alt="banner image"
-                    className="w-full h-44 md:h-36"
+                    className="w-full h-44 md:h-36 rounded-lg"
                   />
                   {/* server banner */}
-
-                  {/* user profile */}
-                  <div className="size-10  rounded-md overflow-hidden absolute -bottom-4 left-3 ">
-                    <Image
-                      src={pic}
-                      alt="profile photo"
-                      className="h-full w-full"
-                    />
-                  </div>
-                  {/* user profile */}
                 </div>
 
-                {/*  */}
-                <div className="px-2 ">
-                  <div className="mb-4">
-                    <h1 className="text-base mb-1 font-poppins font-medium">
-                      Server name
-                    </h1>
-                    <p className="text-sm text-gray-400">
-                      Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                      Ratione, facere sapiente deserunt
-                    </p>
-                  </div>
+                <div className="pl-1">
+                  <p className="text-sm font-poppins font-medium mb-1.5">
+                    No way it&apos;s Awesome!!
+                  </p>
 
-                  <div className="flex items-center gap-x-4">
-                    {/* online users*/}
-                    <div className="flex items-center gap-x-1">
-                      <div className="p-1 bg-teal-400 rounded-full"></div>
-                      <span className="text-sm text-gray-400">1200 online</span>
+                  <div className="flex items-center gap-x-2">
+                    <div className="">
+                      <Image
+                        src={pic}
+                        alt="profile image"
+                        className="size-8 rounded-full"
+                      />
                     </div>
-                    {/* online users*/}
-
-                    {/* member count */}
-                    <div className="flex items-center gap-x-1">
-                      <User size={16} />
-                      <span className="text-sm text-gray-400">Members</span>
+                    <div className="flex-1">
+                      <p className="text-sm font-thin tracking-wider mb-0">
+                        Username
+                      </p>
+                      <p className="text-gray-400 text-xs">Stream tag</p>
                     </div>
-                    {/* member count */}
                   </div>
                 </div>
-
-                {/*  */}
               </div>
             );
           })}
@@ -89,4 +89,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
