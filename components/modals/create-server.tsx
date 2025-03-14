@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 
+// react form
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+
+// axios
+import axios from "axios";
+
+interface FileMetaData {
+  key: string;
+  ufsUrl: string;
+}
 
 import {
   Dialog,
@@ -28,6 +37,7 @@ import { Button } from "../ui/button";
 import FileUpload from "../FileUpload/FileUpload";
 
 import { useModal } from "@/hooks/use-modal-store";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -41,6 +51,11 @@ const formSchema = z.object({
 export const CreateServer = () => {
   const { isOpen, onClose, type } = useModal();
 
+  const [fileMetaData, setFileMetaData] = useState<FileMetaData>({
+    key: "",
+    ufsUrl: "",
+  });
+
   const isModalOpen = isOpen && type === "CreateServer";
 
   const form = useForm({
@@ -52,7 +67,28 @@ export const CreateServer = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    const data = {
+      ...values,
+      imageKey: fileMetaData.key,
+    };
+
+    await axios
+      .post("/api/server", data)
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("Server created successfully", {
+            position: "top-right",
+          });
+        }
+      })
+      .catch((err) => {
+        toast.error("An error occurred. Please try again later");
+        console.log(err);
+      })
+      .finally(() => {
+        form.reset();
+        onClose();
+      });
   };
 
   const isLoading = form.formState.isLoading;
@@ -90,6 +126,7 @@ export const CreateServer = () => {
                         endpoint="imageUploader"
                         value={field.value}
                         onChange={field.onChange}
+                        setFileMetaData={setFileMetaData}
                       />
                     </FormControl>
                   </FormItem>

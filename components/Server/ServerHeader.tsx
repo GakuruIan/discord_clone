@@ -1,6 +1,16 @@
 "use client";
+import React from "react";
 
-import React, { useState } from "react";
+// prisma
+import { MemberRole } from "@prisma/client";
+
+// types
+import { ServerWithMembersProps } from "@/types";
+
+interface ServerHeaderProps {
+  server: ServerWithMembersProps;
+  role: MemberRole;
+}
 
 import {
   DropdownMenu,
@@ -24,16 +34,17 @@ import {
   LogOut,
 } from "lucide-react";
 
-const ServerHeader = () => {
-  const [isAdmin, setIsAdmin] = useState(true);
-  const [isModerator, setIsModerator] = useState(false);
+const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
+  const isAdmin = role === MemberRole.ADMIN;
+  const isModerator = isAdmin || role === MemberRole.MODERATOR;
 
+  console.log(role);
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="focus:outline-0">
           <button className="w-full flex py-4 px-2 items-center justify-between hover:dark:bg-dark-50 hover:bg-zinc-500/10">
-            <p className="">Server name</p>
+            <p className="">{server?.name}</p>
             <ChevronDown size={20} />
           </button>
         </DropdownMenuTrigger>

@@ -1,6 +1,6 @@
 import React from "react";
 
-import Siderbar from "@/components/Sidebar/Siderbar";
+import { Siderbar } from "@/components/Sidebar/Siderbar";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,40 +8,62 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  clerkId   String   @unique @db.Text
-  email     String   @unique @db.Text
-  username  String   @unique
+  id        String    @id @unique @default(uuid())
+  clerkId   String    @unique
+  email     String    @unique
+  username  String    @unique
   avatar    String
-  verified  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  members  Member[]
-  servers  Server[]
-  channels Channel[]
+  verified  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  channels  Channel[]
+  members   Member[]
+  servers   Server[]
 }
 
 model Server {
-  id        Int       @id @default(autoincrement())
-  name      String
-  ownerId   Int
-  members   Member[]
-  channels  Channel[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  owner     User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-
-  ImageUrl ServerImage[]
+  id         String       @id @unique @default(uuid())
+  name       String
+  ownerId    String
+  invitecode String       @db.Text
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  channels   Channel[]
+  members    Member[]
+  owner      User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ImageUrl   ServerImage?
 }
 
 model ServerImage {
-  id        Int      @id @default(autoincrement())
-  url       String
-  serverId  Int
+  id        String   @id @unique @default(uuid())
+  url       String   @db.Text
+  serverId  String   @unique
   key       String
   createdAt DateTime @default(now())
   server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+}
+
+model Member {
+  id        String     @id @unique @default(uuid())
+  userId    String
+  serverId  String
+  role      MemberRole @default(MEMBER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  server    Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Channel {
+  id        String      @id @unique @default(uuid())
+  name      String
+  serverId  String
+  userId    String
+  type      ChannelType @default(TEXT)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  server    Server      @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum MemberRole {
@@ -56,31 +72,8 @@ enum MemberRole {
   MODERATOR
 }
 
-model Member {
-  id        Int        @id @default(autoincrement())
-  userId    Int
-  serverId  Int
-  role      MemberRole @default(MEMBER)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  server    Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
-}
-
 enum ChannelType {
   TEXT
   VOICE
   AUDIO
-}
-
-model Channel {
-  id        Int         @id @default(autoincrement())
-  name      String
-  serverId  Int
-  userId    Int
-  type      ChannelType @default(TEXT)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  server    Server      @relation(fields: [serverId], references: [id], onDelete: Cascade)
 }
