@@ -48,6 +48,21 @@ const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
     onOpen("Invite", { server });
   };
 
+  const handleCreateChannel = () => {
+    setDropdownOpen(false);
+    onOpen("CreateChannel", { server });
+  };
+
+  const handleDeleteServer = () => {
+    setDropdownOpen(false);
+    onOpen("DeleteServer", { server });
+  };
+
+  const handleEditServer = () => {
+    setDropdownOpen(false);
+    onOpen("EditServer", { server });
+  };
+
   return (
     <>
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
@@ -71,7 +86,10 @@ const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
           )}
 
           {isAdmin && (
-            <DropdownMenuItem className="items-center justify-between">
+            <DropdownMenuItem
+              onClick={handleEditServer}
+              className="items-center justify-between"
+            >
               Server settings
               <Settings className="size-5 ml-auto" />
             </DropdownMenuItem>
@@ -85,7 +103,10 @@ const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
           )}
 
           {(isAdmin || isModerator) && (
-            <DropdownMenuItem className="items-center justify-between">
+            <DropdownMenuItem
+              onClick={handleCreateChannel}
+              className="items-center justify-between"
+            >
               Create Channel
               <Plus className="size-5 ml-auto" />
             </DropdownMenuItem>
@@ -94,7 +115,10 @@ const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
           <DropdownMenuSeparator />
 
           {isAdmin && (
-            <DropdownMenuItem className="items-center text-rose-500 hover:bg-rose-500 transition-colors bg-rose-500/10 justify-between">
+            <DropdownMenuItem
+              onClick={handleDeleteServer}
+              className="items-center text-rose-500 hover:bg-rose-500 transition-colors bg-rose-500/10 justify-between"
+            >
               Delete Server
               <Trash className="size-5 ml-auto" />
             </DropdownMenuItem>
