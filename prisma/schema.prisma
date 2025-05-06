@@ -25,7 +25,7 @@ model Server {
   id         String       @id @unique @default(uuid())
   name       String
   ownerId    String
-  invitecode String       @db.Text
+  invitecode String       @unique
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   channels   Channel[]
@@ -74,6 +74,6 @@ enum MemberRole {
 
 enum ChannelType {
   TEXT
-  VOICE
+  VIDEO
   AUDIO
 }

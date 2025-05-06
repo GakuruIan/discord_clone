@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 
 // react form
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+// prisma
+import { ChannelType } from "@prisma/client";
+
+// router
+import { useParams } from "next/navigation";
+
 // axios
 import axios from "axios";
-
-interface FileMetaData {
-  key: string;
-  ufsUrl: string;
-}
 
 import {
   Dialog,
@@ -32,78 +33,76 @@ import {
 } from "@/components/ui/form";
 
 import { Input } from "../ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectItem,
+  SelectContent,
+  SelectValue,
+} from "../ui/select";
 
 import { Button } from "../ui/button";
-import FileUpload from "../FileUpload/FileUpload";
 
 import { useModal } from "@/hooks/use-modal-store";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Server name is required",
-  }),
-  imageUrl: z.string().min(1, {
-    message: "Server image is required",
-  }),
+  channel_name: z
+    .string()
+    .min(1, {
+      message: "Channel name is required",
+    })
+    .refine((channel_name) => channel_name !== "general", {
+      message: "Channel cannot be 'general",
+    }),
+  channel_type: z.nativeEnum(ChannelType),
 });
 
-export const CreateServer = () => {
+export const CreateChannel = () => {
   const { isOpen, onClose, type } = useModal();
 
-  const [fileMetaData, setFileMetaData] = useState<FileMetaData>({
-    key: "",
-    ufsUrl: "",
-  });
+  const { serverid } = useParams();
 
-  const isModalOpen = isOpen && type === "CreateServer";
+  const isModalOpen = isOpen && type === "CreateChannel";
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      imageUrl: "",
+      channel_name: "",
+      channel_type: ChannelType.TEXT,
     },
   });
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const data = {
-      ...values,
-      imageKey: fileMetaData.key,
-    };
-
-    await axios
-      .post("/api/server", data)
-      .then((res) => {
-        if (res.status === 200) {
-          toast.success("Server created successfully", {
-            position: "top-right",
-          });
-        }
-      })
-      .catch((err) => {
-        toast.error("An error occurred. Please try again later");
-        console.log(err);
-      })
-      .finally(() => {
-        form.reset();
-        onClose();
-      });
-  };
-
-  const isLoading = form.formState.isSubmitting;
 
   const handleClose = () => {
     form.reset();
     onClose();
   };
 
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await toast.promise(
+      async () => {
+        await axios
+          .post(`/api/server/${serverid}/channels`, values)
+          .catch((err) => console.log(err));
+      },
+      {
+        loading: "Creating channel...",
+        success: "Channel create successfully",
+        error: "Error in creating channel",
+        position: "bottom-right",
+      }
+    );
+    handleClose();
+  };
+
+  const isLoading = form.formState.isSubmitting;
+
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="dark:bg-dark-300 border-0 dark:text-white text-black bg-white overflow-hidden">
         <DialogHeader className="py-4 px-6">
           <DialogTitle className="text-center font-poppins tracking-wider mb-1">
-            Customize your server
+            Create Server channel
           </DialogTitle>
           <DialogDescription className="text-center font-saira text-base dark:text-gray-400 text-gray-500">
             Give your server personality with a name and an image. You can
@@ -112,41 +111,19 @@ export const CreateServer = () => {
         </DialogHeader>
         <Form {...form}>
           <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="flex justify-center items-center text-center">
-              <FormField
-                control={form.control}
-                name="imageUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    {/* <FormLabel className="capitalize font-medium text-gray-500 dark:text-gray-400">
-                       Server Image
-                    </FormLabel> */}
-                    <FormControl>
-                      <FileUpload
-                        endpoint="imageUploader"
-                        value={field.value}
-                        onChange={field.onChange}
-                        setFileMetaData={setFileMetaData}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-
             <FormField
               control={form.control}
-              name="name"
+              name="channel_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase tracking-wider font-saira font-semibold text-black dark:text-gray-400">
-                    Server name
+                    Channel name
                   </FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
                       className="placeholder:text-sm placeholder:dark:text-gray-400 placeholder:text-gray-400 bg-light-200 tracking-wider font-saira dark:bg-dark-50 dark:text-white  border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                      placeholder="Enter server name"
+                      placeholder="Enter channel name"
                       {...field}
                     />
                   </FormControl>
@@ -155,9 +132,36 @@ export const CreateServer = () => {
               )}
             />
 
-            <DialogFooter className="py-4 px-6">
+            <FormField
+              control={form.control}
+              name="channel_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase tracking-wider font-saira font-semibold text-black dark:text-gray-400">
+                    Channel Type
+                  </FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select channel type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(ChannelType).map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter className="py-4 ">
               <Button variant="primary" disabled={isLoading}>
-                Create Server
+                Create Channel
               </Button>
             </DialogFooter>
           </form>

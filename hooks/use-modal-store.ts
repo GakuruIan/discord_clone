@@ -1,18 +1,33 @@
-import {create} from 'zustand'
+import { Server, Channel, ChannelType } from "@prisma/client";
+import { create } from "zustand";
 
-export type modalType = "CreateServer" | "EditServer" | "DeleteServer"
+export type modalType =
+  | "CreateServer"
+  | "EditServer"
+  | "DeleteServer"
+  | "CreateChannel"
+  | "EditChannel"
+  | "DeleteChannel"
+  | "Invite";
 
-interface ModalStore {
-    type: modalType | null,
-    isOpen:boolean,
-    onOpen:(type:modalType)=>void,
-    onClose:() =>void
+interface ModalData {
+  server?: Server;
+  channel?: Channel;
+  channelType?: ChannelType;
 }
 
+interface ModalStore {
+  type: modalType | null;
+  isOpen: boolean;
+  data: ModalData;
+  onOpen: (type: modalType, data?: ModalData) => void;
+  onClose: () => void;
+}
 
-export const useModal=create<ModalStore>((set)=>({
-    type:null,
-    isOpen:false,
-    onOpen:(type)=>set({isOpen:true,type}),
-    onClose:()=>set({type:null,isOpen:false})
-}))
+export const useModal = create<ModalStore>((set) => ({
+  type: null,
+  isOpen: false,
+  data: {},
+  onOpen: (type, data = {}) => set({ isOpen: true, type, data }),
+  onClose: () => set({ type: null, isOpen: false }),
+}));

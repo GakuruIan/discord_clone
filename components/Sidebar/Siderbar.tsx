@@ -34,16 +34,7 @@ export const Siderbar = async () => {
     <div className="flex flex-col items-center h-full  gap-y-2 px-1  py-4">
       <div className="border-b border-b-gray-300 dark:border-b-gray-600 pb-2">
         {/* create server */}
-
         <NavigationAction />
-        {/* <Actiontooltip label="create server" align="center" side="right">
-          <button
-            onClick={() => onOpen("CreateServer")}
-            className="bg-slate-200 dark:bg-dark-50 p-3 rounded-md hover:bg-indigo-400 hover:text-white flex items-center justify-center"
-          >
-            <Plus size={18} />
-          </button>
-        </Actiontooltip> */}
         {/* create server*/}
       </div>
       {/* servers */}

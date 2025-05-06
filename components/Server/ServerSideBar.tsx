@@ -22,8 +22,6 @@ import { currentUser } from "@/lib/current-user";
 import { redirect } from "next/navigation";
 
 const ServerSideBar: React.FC<serverSideProps> = async ({ serverId }) => {
-  const Channels = [1, 2, 3, 4, 5];
-
   const user = await currentUser();
 
   if (!user) {
@@ -55,16 +53,16 @@ const ServerSideBar: React.FC<serverSideProps> = async ({ serverId }) => {
     return redirect("/");
   }
 
-  const TextChannel = server?.channels.filter(
+  const TextChannels = server?.channels.filter(
     (channel) => channel.type === ChannelType.TEXT
   );
 
-  const AudioChannel = server?.channels.filter(
+  const AudioChannels = server?.channels.filter(
     (channel) => channel.type === ChannelType.AUDIO
   );
 
-  const VoiceChannel = server?.channels.filter(
-    (channel) => channel.type === ChannelType.VOICE
+  const VideoChannels = server?.channels.filter(
+    (channel) => channel.type === ChannelType.VIDEO
   );
 
   const Members = server?.members.filter(
@@ -84,45 +82,68 @@ const ServerSideBar: React.FC<serverSideProps> = async ({ serverId }) => {
           <ServerSearch />
           <Separator />
 
-          {/* add condition to check the length of channels */}
-          <div className="mt-4">
-            <ServerSection
-              sectionType="channel"
-              role="admin"
-              label="Text channels"
-            />
-            {Channels.map((_, index) => {
-              return (
-                <ServerChannel
-                  key={index}
-                  channel={`Channel ${index}`}
-                  role="admin"
-                  channelType="text"
-                />
-              );
-            })}
-          </div>
-          {/* add condition to check the length of channels */}
+          {TextChannels.length > 0 && (
+            <div className="mt-4">
+              <ServerSection
+                sectionType="channel"
+                role="admin"
+                label="Text channels"
+              />
+              {TextChannels.map((channel) => {
+                return (
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    role={role as MemberRole}
+                    channelType={channel.type}
+                    server={server}
+                  />
+                );
+              })}
+            </div>
+          )}
 
-          {/* add condition to check the length of channels */}
-          <div className="mt-4">
-            <ServerSection
-              sectionType="channel"
-              role="admin"
-              label="Audio channels"
-            />
-            {Channels.map((_, index) => {
-              return (
-                <ServerChannel
-                  key={index}
-                  channel={`Channel ${index}`}
-                  role="admin"
-                  channelType="audio"
-                />
-              );
-            })}
-          </div>
-          {/* add condition to check the length of channels */}
+          {AudioChannels.length > 0 && (
+            <div className="mt-4">
+              <ServerSection
+                sectionType="channel"
+                role={role}
+                label="Audio channels"
+              />
+              {AudioChannels.map((channel) => {
+                return (
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    role={role as MemberRole}
+                    channelType={channel.type}
+                    server={server}
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          {VideoChannels.length > 0 && (
+            <div className="mt-4">
+              <ServerSection
+                sectionType="channel"
+                role={role}
+                label="Video channels"
+              />
+              {VideoChannels.map((channel) => {
+                return (
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    role={role as MemberRole}
+                    channelType={channel.type}
+                    server={server}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </ScrollArea>
     </div>

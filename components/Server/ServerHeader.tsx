@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
 // prisma
 import { MemberRole } from "@prisma/client";
@@ -21,8 +21,6 @@ import {
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
 
-import { Separator } from "../ui/separator";
-
 // Users
 import {
   ChevronDown,
@@ -34,14 +32,25 @@ import {
   LogOut,
 } from "lucide-react";
 
+// hooks
+import { useModal } from "@/hooks/use-modal-store";
+
 const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
   const isAdmin = role === MemberRole.ADMIN;
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
 
-  console.log(role);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const { onOpen } = useModal();
+
+  const handleOpenDialog = () => {
+    setDropdownOpen(false);
+    onOpen("Invite", { server });
+  };
+
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild className="focus:outline-0">
           <button className="w-full flex py-4 px-2 items-center justify-between hover:dark:bg-dark-50 hover:bg-zinc-500/10">
             <p className="">{server?.name}</p>
@@ -51,7 +60,11 @@ const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
         <DropdownMenuContent className="w-56 dark:bg-dark-200 border-gray-200 dark:border-dark-50">
           <DropdownMenuLabel>Server actions</DropdownMenuLabel>
           {(isAdmin || isModerator) && (
-            <DropdownMenuItem className="items-center justify-between">
+            <DropdownMenuItem
+              onClick={handleOpenDialog}
+              // onClick={() => onOpen("Invite", { server })}
+              className="items-center justify-between"
+            >
               Invite users
               <UserPlus className="size-5 ml-auto" />
             </DropdownMenuItem>
@@ -95,7 +108,6 @@ const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      <Separator />
     </>
   );
 };

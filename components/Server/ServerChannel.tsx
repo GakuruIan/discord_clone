@@ -1,33 +1,48 @@
+"use client";
 import React from "react";
 
+import { MemberRole, ChannelType, Channel, Server } from "@prisma/client";
+
 interface channelProps {
-  channel: string;
-  channelType: "text" | "audio" | "video";
-  role: "admin" | "moderator" | "member";
+  channel: Channel;
+  channelType: ChannelType;
+  role: MemberRole;
+  server: Server;
 }
 
 import { Edit, Hash, Mic, Trash, Video } from "lucide-react";
 import Actiontooltip from "../Actiontooltip/Actiontooltip";
 
+// hooks
+import { useModal } from "@/hooks/use-modal-store";
+
 const IconMap = {
-  text: Hash,
-  audio: Mic,
-  video: Video,
+  TEXT: Hash,
+  AUDIO: Mic,
+  VIDEO: Video,
 };
 
-const ServerChannel = ({ channel, channelType, role }: channelProps) => {
+const ServerChannel = ({
+  channel,
+  channelType,
+  role,
+  server,
+}: channelProps) => {
   const Icon = IconMap[channelType];
+
+  const { onOpen } = useModal();
   return (
     <button className="group w-full flex items-center gap-x-2 text-zinc-500 dark:text-zinc-400 hover:bg-indigo-500/10 dark:hover:bg-dark-20 py-2 px-2 rounded-md transition-colors duration-75">
       <Icon className="text-zinc-400 size-4" />
       <p className="text-sm group-hover:text-gray-600 group-hover:dark:text-zinc-300">
-        {channel}
+        {channel?.name}
       </p>
 
-      {channel !== "general" && role !== "member" && (
+      {channel.name !== "general" && role !== MemberRole.MEMBER && (
         <div className="flex ml-auto items-center gap-x-2">
           <Actiontooltip label="Edit" align="start" side="top">
             <Edit
+              onClick={() => onOpen("EditChannel", { server, channel })}
               size={16}
               className="hidden group-hover:block group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
             />
@@ -35,6 +50,7 @@ const ServerChannel = ({ channel, channelType, role }: channelProps) => {
 
           <Actiontooltip label="Delete" align="start" side="top">
             <Trash
+              onClick={() => onOpen("DeleteChannel", { server, channel })}
               size={16}
               className="hidden group-hover:block group-hover:text-rose-500"
             />
