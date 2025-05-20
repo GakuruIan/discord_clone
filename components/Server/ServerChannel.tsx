@@ -1,13 +1,15 @@
 "use client";
 import React from "react";
 
-import { MemberRole, ChannelType, Channel, Server } from "@prisma/client";
+import { MemberRole, ChannelType, Channel } from "@prisma/client";
+
+import { ServerWithImageProps } from "@/types";
 
 interface channelProps {
   channel: Channel;
   channelType: ChannelType;
   role: MemberRole;
-  server: Server;
+  server: ServerWithImageProps;
 }
 
 import { Edit, Hash, Mic, Trash, Video } from "lucide-react";

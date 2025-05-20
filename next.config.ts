@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         hostname: "siin8s7han.ufs.sh",
         pathname: "/f/*",
       },
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
+        pathname: "/**",
+      },
     ],
   },
 };

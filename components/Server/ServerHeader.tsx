@@ -63,6 +63,11 @@ const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
     onOpen("EditServer", { server });
   };
 
+  const handleMembers = () => {
+    setDropdownOpen(false);
+    onOpen("ManageMembers", { server });
+  };
+
   return (
     <>
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
@@ -96,7 +101,10 @@ const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
           )}
 
           {isAdmin && (
-            <DropdownMenuItem className="items-center justify-between">
+            <DropdownMenuItem
+              className="items-center justify-between"
+              onClick={handleMembers}
+            >
               Manage members
               <User className="size-5 ml-auto" />
             </DropdownMenuItem>
